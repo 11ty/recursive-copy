@@ -1,11 +1,8 @@
-# recursive-copy
-[![npm version](https://img.shields.io/npm/v/recursive-copy.svg)](https://www.npmjs.com/package/recursive-copy)
-![Stability](https://img.shields.io/badge/stability-stable-brightgreen.svg)
-[![Build Status](https://travis-ci.com/timkendrick/recursive-copy.svg?branch=master)](https://travis-ci.com/timkendrick/recursive-copy)
-[![Windows Build Status](https://img.shields.io/appveyor/ci/timkendrick/recursive-copy/master.svg?label=windows%20build)](https://ci.appveyor.com/project/timkendrick/recursive-copy/branch/master)
+# `@11ty/recursive-copy`
+
+A temporary fork of [`timkendrick/recursive-copy`](https://github.com/timkendrick/recursive-copy) to satisfy https://github.com/11ty/eleventy/issues/3299 as Eleventy slowly [moves to use Node native API `fs.cp`](https://github.com/11ty/eleventy/issues/3360).
 
 > Simple, flexible file copy utility
-
 
 ## Features
 
@@ -25,7 +22,7 @@
 #### Node-style callback interface
 
 ```javascript
-var copy = require('recursive-copy');
+var copy = require('@11ty/recursive-copy');
 
 copy('src', 'dest', function(error, results) {
 	if (error) {
@@ -39,7 +36,7 @@ copy('src', 'dest', function(error, results) {
 #### Promise interface
 
 ```javascript
-var copy = require('recursive-copy');
+var copy = require('@11ty/recursive-copy');
 
 copy('src', 'dest')
 	.then(function(results) {
@@ -53,7 +50,7 @@ copy('src', 'dest')
 #### ES2015+ usage
 
 ```javascript
-import copy from 'recursive-copy';
+import copy from '@11ty/recursive-copy';
 
 try {
 	const results = await copy('src', 'dest');
@@ -66,7 +63,7 @@ try {
 #### Advanced options
 
 ```javascript
-var copy = require('recursive-copy');
+var copy = require('@11ty/recursive-copy');
 
 var path = require('path');
 var through = require('through2');
