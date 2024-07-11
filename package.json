@@ -50,7 +50,7 @@
     "graceful-fs": "^4.2.11",
     "junk": "^1.0.1",
     "maximatch": "^0.1.0",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^3.0.1",
     "pify": "^2.3.0",
     "promise": "^7.0.1",
     "rimraf": "^5.0.7",
