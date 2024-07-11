@@ -12,6 +12,7 @@ jobs:
         node: ["18", "20", "22"]
     name: Node.js ${{ matrix.node }} on ${{ matrix.os }}
     steps:
+      - run: git config --global core.autocrlf input
       - uses: actions/checkout@v4
       - name: Setup node
         uses: actions/setup-node@v4
