@@ -47,13 +47,13 @@
   "homepage": "https://github.com/timkendrick/recursive-copy",
   "dependencies": {
     "errno": "^0.1.2",
-    "graceful-fs": "^4.1.4",
+    "graceful-fs": "^4.2.11",
     "junk": "^1.0.1",
     "maximatch": "^0.1.0",
     "mkdirp": "^0.5.1",
     "pify": "^2.3.0",
     "promise": "^7.0.1",
-    "rimraf": "^2.7.1",
+    "rimraf": "^5.0.7",
     "slash": "^1.0.0"
   },
   "devDependencies": {

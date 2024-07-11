@@ -7,7 +7,7 @@ var path = require('path');
 var chai = require('chai');
 var expect = chai.expect;
 var chaiAsPromised = require('chai-as-promised');
-var rimraf = require('rimraf');
+var rimraf = require('rimraf').rimraf;
 var slash = require('slash');
 var readDirFiles = require('read-dir-files');
 var through = require('through2');
@@ -28,7 +28,9 @@ describe('copy()', function() {
 	beforeEach(function(done) {
 		fs.mkdir(DESTINATION_PATH, function(error) {
 			if (error) {
-				rimraf(path.join(DESTINATION_PATH, '**/*'), done);
+				return rimraf(path.join(DESTINATION_PATH, '**/*')).then(function() {
+					done();
+				});
 			} else {
 				done();
 			}
@@ -36,7 +38,9 @@ describe('copy()', function() {
 	});
 
 	afterEach(function(done) {
-		return rimraf(DESTINATION_PATH, done);
+		return rimraf(DESTINATION_PATH).then(function() {
+			done();
+		});
 	});
 
 	function getSourcePath(filename) {
