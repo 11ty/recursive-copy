@@ -1,6 +1,6 @@
 {
   "name": "@11ty/recursive-copy",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A fork of `recursive-copy`: Simple, flexible file copy utility",
   "main": "index.js",
   "types": "index.d.ts",
