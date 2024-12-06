@@ -573,6 +573,21 @@ describe('copy()', function() {
 			});
 		});
 
+		it('should not copy dotfiles if dotfile is referenced directly', function() {
+			return copy(
+				getSourcePath('dotfiles/.a'),
+				getDestinationPath()
+			).then(function(results) {
+				return getOutputFiles()
+					.then(function(files) {
+						var actual, expected;
+						actual = files;
+						expected = {};
+						expect(actual).to.eql(expected);
+					});
+			});
+		});
+
 		it('should copy dotfiles if dotfiles is specified', function() {
 			return copy(
 				getSourcePath('dotfiles'),
