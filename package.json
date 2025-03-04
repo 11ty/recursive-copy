@@ -1,7 +1,10 @@
 {
   "name": "@11ty/recursive-copy",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "A fork of `recursive-copy`: Simple, flexible file copy utility",
+  "engines": {
+    "node": ">=18"
+  },
   "main": "index.js",
   "types": "index.d.ts",
   "directories": {
@@ -40,6 +43,9 @@
     "regexp"
   ],
   "author": "Tim Kendrick <timkendrick@gmail.com>",
+  "contributors": [
+    "Zach Leatherman <zachleatherman@gmail.com> (https://zachleat.com/)"
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/11ty/recursive-copy/issues"
