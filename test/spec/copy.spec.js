@@ -1,9 +1,8 @@
 'use strict';
 
 var Promise = global.Promise;
-
-var fs = require('fs');
-var path = require('path');
+var fs = require('node:fs');
+var path = require('node:path');
 var chai = require('chai');
 var expect = chai.expect;
 var chaiAsPromised = require('chai-as-promised');
