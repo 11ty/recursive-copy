@@ -51,7 +51,7 @@
     "junk": "^3.1.0",
     "maximatch": "^0.1.0",
     "mkdirp": "^3.0.1",
-    "slash": "^1.0.0"
+    "slash": "^3.0.0"
   },
   "devDependencies": {
     "@types/node": "^14.18.63",
