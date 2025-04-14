@@ -17,7 +17,6 @@ A temporary fork of [`timkendrick/recursive-copy`](https://github.com/timkendric
 - Choose whether to overwrite existing files
 - Choose whether to copy system files
 - Filters out [junk](https://www.npmjs.com/package/junk) files by default
-- Uses [graceful-fs](https://www.npmjs.com/package/graceful-fs) and [mkdirp](https://www.npmjs.com/package/mkdirp) to avoid filesystem errors
 - Emits start, finish and error events for each file that is processed
 - Optional promise-based interface
 

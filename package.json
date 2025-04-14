@@ -53,7 +53,6 @@
   "homepage": "https://github.com/11ty/recursive-copy",
   "dependencies": {
     "errno": "^1.0.0",
-    "graceful-fs": "^4.2.11",
     "junk": "^3.1.0",
     "maximatch": "^0.1.0",
     "slash": "^3.0.0"
