@@ -3,7 +3,7 @@
   "version": "5.0.0",
   "description": "A fork of `recursive-copy`: Simple, flexible file copy utility",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "main": "index.js",
   "types": "index.d.ts",

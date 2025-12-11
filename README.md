@@ -2,6 +2,7 @@
 
 A temporary fork of [`timkendrick/recursive-copy`](https://github.com/timkendrick/recursive-copy) to satisfy https://github.com/11ty/eleventy/issues/3299 as Eleventy slowly [moves to use Node native API `fs.cp`](https://github.com/11ty/eleventy/issues/3360).
 
+- v5.x requires Node 20+
 - v4.x requires Node 18+
 - v3.x requires Node 0.10+
 - v2.x requires Node 0.10+
