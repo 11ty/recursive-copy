@@ -6,11 +6,11 @@ var path = require('node:path');
 var chai = require('chai');
 var expect = chai.expect;
 var chaiAsPromised = require('chai-as-promised');
-var slash = require('slash');
 var readDirFiles = require('read-dir-files');
 var through = require('through2');
 var rewire = require('rewire');
 
+var slash = require('../../lib/slash.js');
 var copy = rewire('../../lib/copy');
 
 var SOURCE_PATH = path.resolve(__dirname, '../fixtures/source');
