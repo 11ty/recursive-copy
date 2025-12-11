@@ -54,7 +54,8 @@
   "dependencies": {
     "errno": "^1.0.0",
     "junk": "^3.1.0",
-    "minimatch": "^10.1.1"
+    "minimatch": "^10.1.1",
+    "slash": "^3.0.0"
   },
   "devDependencies": {
     "@types/node": "^14.18.63",

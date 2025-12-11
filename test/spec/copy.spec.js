@@ -3,10 +3,10 @@
 var Promise = global.Promise;
 var fs = require('node:fs');
 var path = require('node:path');
-var posixPath = path.posix;
 var chai = require('chai');
 var expect = chai.expect;
 var chaiAsPromised = require('chai-as-promised');
+var slash = require('slash');
 var readDirFiles = require('read-dir-files');
 var through = require('through2');
 var rewire = require('rewire');
@@ -454,13 +454,13 @@ describe('copy()', function() {
 				getDestinationPath('nested-symlinks')
 			).then(function(results) {
 				var actual, expected;
-				actual = posixPath.normalize(fs.readlinkSync(getDestinationPath('nested-symlinks/file')));
+				actual = slash(fs.readlinkSync(getDestinationPath('nested-symlinks/file')));
 				expected = '../file';
 				expect(actual).to.equal(expected);
-				actual = posixPath.normalize(fs.readlinkSync(getDestinationPath('nested-symlinks/directory')));
+				actual = slash(fs.readlinkSync(getDestinationPath('nested-symlinks/directory')));
 				expected = '../directory';
 				expect(actual).to.equal(expected);
-				actual = posixPath.normalize(fs.readlinkSync(getDestinationPath('nested-symlinks/nested/directory')));
+				actual = slash(fs.readlinkSync(getDestinationPath('nested-symlinks/nested/directory')));
 				expected = '../../directory';
 				expect(actual).to.equal(expected);
 			});
