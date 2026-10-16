@@ -6,6 +6,8 @@ updates:
       interval: "weekly"
     cooldown:
       default-days: 7
+    allow:
+      - dependency-type: "production"
     groups:
       npm:
         patterns:
