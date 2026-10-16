@@ -87,3 +87,7 @@ type WithCopyEvents<T> = T & {
 expectError(copy(123, 'dest'));
 expectError(copy('source', 123));
 expectError(copy('source', 'dest', 'options'));
+
+expectType<boolean>(copy.shouldCopy('.DS_Store'));
+expectType<boolean>(copy.shouldCopy('.DS_Store', { dot: true, junk: false }));
+expectError(copy.shouldCopy('.DS_Store', { filter: '*' }));

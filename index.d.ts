@@ -59,6 +59,10 @@ interface CopyFn {
 		dest: string,
 		callback: (error: Error | null, results?: Array<CopyOperation>) => void,
 	): WithCopyEvents<{}>;
+	/**
+	 * Whether the `dot` and `junk` options keep a file, by its basename.
+	 */
+	shouldCopy(filePath: string, options?: Pick<Options, 'dot' | 'junk'>): boolean;
 	events: {
 		ERROR: CopyEventType.ERROR;
 		COMPLETE: CopyEventType.COMPLETE;

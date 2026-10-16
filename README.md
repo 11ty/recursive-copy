@@ -166,6 +166,15 @@ Recursively copy files and folders from `src` to `dest`
 ]
 ```
 
+### `copy.shouldCopy(filePath, [options])`
+
+Returns whether the `dot` and `junk` options keep a file, checked against its basename (`filter` is not applied).
+
+```javascript
+copy.shouldCopy('src/.DS_Store', { dot: true }); // false
+copy.shouldCopy('src/.htaccess', { dot: true }); // true
+```
+
 ## Events
 
 The value returned by the `copy` function implements the `EventEmitter` interface, and emits the following events:

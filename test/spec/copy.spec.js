@@ -1222,6 +1222,25 @@ describe('copy()', function() {
 		});
 	});
 
+	describe('shouldCopy()', function() {
+		it('should skip dotfiles and junk files by default', function() {
+			expect(copy.shouldCopy('a/b')).to.equal(true);
+			expect(copy.shouldCopy('a/.b')).to.equal(false);
+			expect(copy.shouldCopy('a/Thumbs.db')).to.equal(false);
+		});
+
+		it('should keep dotfiles but not junk files with dot', function() {
+			expect(copy.shouldCopy('a/.b', { dot: true })).to.equal(true);
+			expect(copy.shouldCopy('a/.DS_Store', { dot: true })).to.equal(false);
+		});
+
+		it('should keep junk files with junk', function() {
+			expect(copy.shouldCopy('a/Thumbs.db', { junk: true })).to.equal(true);
+			expect(copy.shouldCopy('a/.DS_Store', { junk: true })).to.equal(false);
+			expect(copy.shouldCopy('a/.DS_Store', { dot: true, junk: true })).to.equal(true);
+		});
+	});
+
 	describe('argument validation', function() {
 
 		it('should throw an error if the source path does not exist', function() {
