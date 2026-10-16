@@ -53,19 +53,19 @@
   "homepage": "https://github.com/11ty/recursive-copy",
   "dependencies": {
     "errno": "^1.0.0",
-    "junk": "^3.1.0",
+    "junk": "^4.0.1",
     "minimatch": "^10.2.4"
   },
   "devDependencies": {
-    "@types/node": "^14.18.63",
-    "chai": "^3.5.0",
-    "chai-as-promised": "^5.3.0",
-    "eslint": "^2.13.1",
+    "@types/node": "^26.6.4",
+    "chai": "^6.3.0",
+    "chai-as-promised": "^8.0.2",
+    "eslint": "^10.12.0",
     "if-node-version": "^1.1.1",
-    "mocha": "^2.5.3",
+    "mocha": "^12.0.3",
     "read-dir-files": "^0.1.1",
-    "rewire": "^2.5.2",
-    "through2": "^2.0.5",
-    "tsd": "0.31.2"
+    "rewire": "^9.0.1",
+    "through2": "^5.0.11",
+    "tsd": "0.33.0"
   }
 }
