@@ -1,6 +1,6 @@
 {
   "name": "@11ty/recursive-copy",
-  "version": "5.0.2",
+  "version": "5.1.0",
   "description": "A fork of `recursive-copy`: Simple, flexible file copy utility",
   "engines": {
     "node": ">=20"
