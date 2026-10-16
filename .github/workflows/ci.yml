@@ -3,8 +3,6 @@ on:
   push:
     branches-ignore:
       - "gh-pages"
-    paths-ignore:
-      - ".github/workflows/**"
 jobs:
   build:
     runs-on: ${{ matrix.os }}
