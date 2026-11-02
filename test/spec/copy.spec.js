@@ -6,11 +6,15 @@ var path = require('node:path');
 var test = require('node:test');
 var assert = require('node:assert');
 var readDirFiles = require('read-dir-files');
-var through = require('through2');
-var rewire = require('rewire');
+var Transform = require('node:stream').Transform;
 
 var slash = require('../../lib/slash.js');
-var copy = rewire('../../lib/copy');
+// lib/copy keeps references to these at load time, so they must be mocked before it is required.
+var originalMkdir = fs.promises.mkdir;
+var originalSymlink = fs.promises.symlink;
+var mkdirMock = test.mock.method(fs.promises, 'mkdir');
+var symlinkMock = test.mock.method(fs.promises, 'symlink');
+var copy = require('../../lib/copy');
 
 var SOURCE_PATH = path.resolve(__dirname, '../fixtures/source');
 var DESTINATION_PATH = path.resolve(__dirname, '../fixtures/destination');
@@ -128,40 +132,25 @@ describe('copy()', function() {
 		}
 	}
 
-	function mockMkdirp(subject, errors) {
-		return subject.__set__('mkdirp', mkdirp);
-
-		function mkdirp(path, mode, callback) {
-			if ((arguments.length === 2) && (typeof mode === 'function')) {
-				callback = mode;
-				mode = undefined;
+	function mockMkdirp(errors) {
+		mkdirMock.mock.mockImplementation(function(path) {
+			if (errors[path]) {
+				return Promise.reject(errors[path]);
 			}
-			setTimeout(function() {
-				if (errors && errors[path]) {
-					callback(errors[path]);
-				} else {
-					callback(null);
-				}
-			});
-		}
+			return originalMkdir.apply(this, arguments);
+		});
+		return function() {
+			mkdirMock.mock.mockImplementation(originalMkdir);
+		};
 	}
 
-	function mockSymlink(subject) {
-		var originalSymlink = subject.__get__('fs').symlink;
-		subject.__get__('fs').symlink = symlink;
+	function mockSymlink() {
+		symlinkMock.mock.mockImplementation(function() {
+			return Promise.reject(new Error('Test error'));
+		});
 		return function() {
-			subject.__get__('fs').symlink = originalSymlink;
+			symlinkMock.mock.mockImplementation(originalSymlink);
 		};
-
-		function symlink(srcPath, dstPath, type, callback) {
-			if ((arguments.length === 3) && (typeof type === 'function')) {
-				callback = type;
-				type = undefined;
-			}
-			setTimeout(function() {
-				callback(new Error('Test error'));
-			});
-		}
 	}
 
 	describe('basic operation', function() {
@@ -939,7 +928,7 @@ describe('copy()', function() {
 				getDestinationPath(),
 				{
 					rename: function(path) {
-						return path.replace(/^2/, '3').replace(/[\/\\]2/g, '/3');
+						return path.replace(/^2/, '3').replace(/[/\\]2/g, '/3');
 					}
 				}
 			).then(function(results) {
@@ -986,7 +975,7 @@ describe('copy()', function() {
 				getDestinationPath('parent'),
 				{
 					rename: function(path) {
-						return path.replace(/^2/, '../3').replace(/[\/\\]2/g, '/3');
+						return path.replace(/^2/, '../3').replace(/[/\\]2/g, '/3');
 					}
 				}
 			).then(function(results) {
@@ -1035,7 +1024,7 @@ describe('copy()', function() {
 				getDestinationPath(),
 				{
 					rename: function(path) {
-						return path.replace(/^2/, 'child/3').replace(/[\/\\]2/g, '/3');
+						return path.replace(/^2/, 'child/3').replace(/[/\\]2/g, '/3');
 					}
 				}
 			).then(function(results) {
@@ -1112,9 +1101,9 @@ describe('copy()', function() {
 				{
 					transform: function(src, dest, stats) {
 						transformArguments = arguments;
-						return through(function(chunk, enc, done) {
+						return new Transform({ transform: function(chunk, enc, done) {
 							done(null, chunk.toString().toUpperCase());
-						});
+						} });
 					}
 				}
 			).then(function(results) {
@@ -1144,9 +1133,9 @@ describe('copy()', function() {
 				{
 					transform: function(src, dest, stats) {
 						if (path.basename(src) === 'b') { return null; }
-						return through(function(chunk, enc, done) {
+						return new Transform({ transform: function(chunk, enc, done) {
 							done(null, chunk.toString().toUpperCase());
-						});
+						} });
 					}
 				}
 			).then(function(results) {
@@ -1174,9 +1163,9 @@ describe('copy()', function() {
 				getDestinationPath('file'),
 				{
 					transform: function(src, dest, stats) {
-						return through(function(chunk, enc, done) {
+						return new Transform({ transform: function(chunk, enc, done) {
 							done(new Error('Stream error'));
-						});
+						} });
 					}
 				}
 			);
@@ -1189,13 +1178,13 @@ describe('copy()', function() {
 				getDestinationPath('nested-directory'),
 				{
 					transform: function(src, dest, stats) {
-						return through(function(chunk, enc, done) {
+						return new Transform({ transform: function(chunk, enc, done) {
 							if (src === getSourcePath('nested-directory/1/1-1/1-1-a')) {
 								done(new Error('Stream error'));
 							} else {
 								done(null, chunk);
 							}
-						});
+						} });
 					}
 				}
 			).then(function() {
@@ -1493,7 +1482,9 @@ describe('copy()', function() {
 				getDestinationPath('file')
 			);
 			var events = listenTo(copier, COPY_EVENTS);
-			return copier.catch(function() {
+			return copier.then(function() {
+				throw new Error('Should throw error');
+			}, function() {
 				var actual, expected;
 
 				var eventNames = events.map(function(event) {
@@ -1536,14 +1527,16 @@ describe('copy()', function() {
 				getDestinationPath('file'),
 				{
 					transform: function(src, dest, stats) {
-						return through(function(chunk, enc, done) {
+						return new Transform({ transform: function(chunk, enc, done) {
 							done(new Error('Stream error'));
-						});
+						} });
 					}
 				}
 			);
 			var events = listenTo(copier, COPY_EVENTS);
-			return copier.catch(function() {
+			return copier.then(function() {
+				throw new Error('Should throw error');
+			}, function() {
 				var actual, expected;
 
 				var eventNames = events.map(function(event) {
@@ -1646,14 +1639,16 @@ describe('copy()', function() {
 		it('should emit directory copy error events', function() {
 			var errors = {};
 			errors[getDestinationPath('empty')] = new Error('Test error');
-			var unmockMkdirp = mockMkdirp(copy, errors);
+			var unmockMkdirp = mockMkdirp(errors);
 
 			var copier = copy(
 				getSourcePath('empty'),
 				getDestinationPath('empty')
 			);
 			var events = listenTo(copier, COPY_EVENTS);
-			return copier.catch(function() {
+			return copier.then(function() {
+				throw new Error('Should throw error');
+			}, function() {
 				var actual, expected;
 
 				var eventNames = events.map(function(event) {
@@ -1717,25 +1712,21 @@ describe('copy()', function() {
 				actual = directoryCopyOperation.stats && directoryCopyOperation.stats.isDirectory;
 				expected = 'function';
 				assert.strictEqual(typeof actual, expected);
-			})
-			.then(function() {
-				unmockMkdirp();
-			})
-			.catch(function() {
-				unmockMkdirp();
-			});
+			}).finally(unmockMkdirp);
 		});
 
 		it('should emit symlink copy error events', function() {
 			createSymbolicLink('.', getSourcePath('symlink'), 'dir');
-			var unmockSymlink = mockSymlink(copy);
+			var unmockSymlink = mockSymlink();
 
 			var copier = copy(
 				getSourcePath('symlink'),
 				getDestinationPath('symlink')
 			);
 			var events = listenTo(copier, COPY_EVENTS);
-			return copier.catch(function() {
+			return copier.then(function() {
+				throw new Error('Should throw error');
+			}, function() {
 				var actual, expected;
 
 				var eventNames = events.map(function(event) {
@@ -1799,14 +1790,7 @@ describe('copy()', function() {
 				actual = symlinkCopyOperation.stats && symlinkCopyOperation.stats.isDirectory;
 				expected = 'function';
 				assert.strictEqual(typeof actual, expected);
-			})
-			.then(function() {
-				unmockSymlink();
-			})
-			.catch(function(error) {
-				unmockSymlink();
-				throw error;
-			});
+			}).finally(unmockSymlink);
 		});
 
 		it('should emit symlink copy events', function() {

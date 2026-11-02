@@ -17,8 +17,8 @@
     "lib"
   ],
   "scripts": {
-    "test": "npm run test:lint && npm run test:unit && if-node-version '>=10' npm run test:typings",
-    "test:lint": "if-node-version '>=4' eslint index.js test",
+    "test": "npm run test:lint && npm run test:unit && npm run test:typings",
+    "test:lint": "eslint index.js test",
     "test:unit": "node --test test/spec/copy.spec.js test/spec/index.spec.js",
     "test:typings": "tsd && echo 'TypeScript definitions are valid'",
     "prepublishOnly": "npm run test"
@@ -56,12 +56,13 @@
     "minimatch": "^11.0.4"
   },
   "devDependencies": {
-    "@types/node": "^14.18.63",
-    "eslint": "^2.13.1",
-    "if-node-version": "^1.1.1",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.14.0",
     "read-dir-files": "^0.1.1",
-    "rewire": "^2.5.2",
-    "through2": "^2.0.5",
     "tsd": "0.33.0"
+  },
+  "overrides": {
+    "minimatch": "$minimatch"
   }
 }
