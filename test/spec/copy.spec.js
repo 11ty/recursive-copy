@@ -763,6 +763,51 @@ describe('copy()', function() {
 			});
 		});
 
+		it('should filter raw source paths via rawPathFilter', function() {
+			var sourcePath = getSourcePath('nested-directory');
+			var receivedPaths = [];
+			return copy(
+				sourcePath,
+				getDestinationPath(),
+				{
+					rawPathFilter: function(filePath) {
+						receivedPaths.push(filePath);
+						var filename = path.basename(filePath);
+						return (filePath === path.join(sourcePath, '1')) || (filename.charAt(0) !== '1');
+					}
+				}
+			).then(function(results) {
+				assert.ok(receivedPaths.length > 0);
+				receivedPaths.forEach(function(filePath) {
+					assert.ok(path.isAbsolute(filePath));
+					assert.ok(filePath.startsWith(sourcePath));
+				});
+				return getOutputFiles()
+					.then(function(files) {
+						var actual, expected;
+						actual = files;
+						expected = {
+							'1': {},
+							'2': {
+								'2-1': {
+									'2-1-a': '2-1-a\n',
+									'2-1-b': '2-1-b\n'
+								},
+								'2-2': {
+									'2-2-a': '2-2-a\n',
+									'2-2-b': '2-2-b\n'
+								},
+								'2-a': '2-a\n',
+								'2-b': '2-b\n'
+							},
+							'a': 'a\n',
+							'b': 'b\n'
+						};
+						assert.deepStrictEqual(actual, expected);
+					});
+			});
+		});
+
 		it('should filter output files via regular expression', function() {
 			return copy(
 				getSourcePath('nested-directory'),
