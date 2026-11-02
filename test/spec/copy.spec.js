@@ -771,6 +771,8 @@ describe('copy()', function() {
 				getDestinationPath(),
 				{
 					rawPathFilter: function(filePath) {
+						// Filters receive forward-slash paths, even on Windows.
+						filePath = path.normalize(filePath);
 						receivedPaths.push(filePath);
 						var filename = path.basename(filePath);
 						return (filePath === path.join(sourcePath, '1')) || (filename.charAt(0) !== '1');
