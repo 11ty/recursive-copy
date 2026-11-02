@@ -3,9 +3,8 @@
 var Promise = global.Promise;
 var fs = require('node:fs');
 var path = require('node:path');
-var chai = require('chai');
-var expect = chai.expect;
-var chaiAsPromised = require('chai-as-promised');
+var test = require('node:test');
+var assert = require('node:assert');
 var readDirFiles = require('read-dir-files');
 var through = require('through2');
 var rewire = require('rewire');
@@ -20,25 +19,18 @@ var COPY_EVENTS = Object.keys(copy.events).map(function(key) {
 	return copy.events[key];
 });
 
-chai.use(chaiAsPromised);
+var describe = test.describe;
+var it = test.it;
+var beforeEach = test.beforeEach;
+var afterEach = test.afterEach;
 
 describe('copy()', function() {
-	beforeEach(function(done) {
-		fs.mkdir(DESTINATION_PATH, function(error) {
-			if (error) {
-				return fs.promises.rm(path.join(DESTINATION_PATH, '**/*'), { recursive: true, force: true }).then(function() {
-					done();
-				});
-			} else {
-				done();
-			}
-		});
+	beforeEach(function() {
+		return fs.promises.mkdir(DESTINATION_PATH, { recursive: true });
 	});
 
-	afterEach(function(done) {
-		return fs.promises.rm(DESTINATION_PATH, { recursive: true, force: true }).then(function() {
-			done();
-		});
+	afterEach(function() {
+		return fs.promises.rm(DESTINATION_PATH, { recursive: true, force: true });
 	});
 
 	function getSourcePath(filename) {
@@ -76,7 +68,7 @@ describe('copy()', function() {
 			paths[copyOperation.src] = copyOperation.dest;
 			return paths;
 		}, {});
-		expect(actual).to.eql(expected);
+		assert.deepStrictEqual(actual, expected);
 
 		actual = results.reduce(function(stats, copyOperation) {
 			stats[copyOperation.dest] = getFileType(copyOperation.stats);
@@ -91,7 +83,7 @@ describe('copy()', function() {
 			paths[copyOperation.dest] = copyOperation.type;
 			return paths;
 		}, {});
-		expect(actual).to.eql(expected);
+		assert.deepStrictEqual(actual, expected);
 
 
 		function getFileType(stats) {
@@ -185,7 +177,7 @@ describe('copy()', function() {
 						expected = {
 							file: 'Hello, world!\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -214,7 +206,7 @@ describe('copy()', function() {
 				var expected = fs.statSync(getSourcePath('file')).mtime;
 				actual.setMilliseconds(0);
 				expected.setMilliseconds(0);
-				expect(actual).to.eql(expected);
+				assert.deepStrictEqual(actual, expected);
 			});
 		});
 
@@ -225,7 +217,7 @@ describe('copy()', function() {
 			).then(function(results) {
 				var actual = fs.statSync(getDestinationPath('executable')).mode;
 				var expected = fs.statSync(getSourcePath('executable')).mode;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 			});
 		});
 
@@ -252,7 +244,7 @@ describe('copy()', function() {
 						expected = {
 							'empty': {}
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -284,7 +276,7 @@ describe('copy()', function() {
 								c: 'c\n'
 							}
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -342,7 +334,7 @@ describe('copy()', function() {
 								'b': 'b\n'
 							}
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -415,7 +407,7 @@ describe('copy()', function() {
 							'a': 'a\n',
 							'b': 'b\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -429,7 +421,7 @@ describe('copy()', function() {
 				var actual, expected;
 				actual = fs.readlinkSync(getDestinationPath('symlink'));
 				expected = '.';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 			});
 		});
 
@@ -456,13 +448,13 @@ describe('copy()', function() {
 				var actual, expected;
 				actual = slash(fs.readlinkSync(getDestinationPath('nested-symlinks/file')));
 				expected = '../file';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 				actual = slash(fs.readlinkSync(getDestinationPath('nested-symlinks/directory')));
 				expected = '../directory';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 				actual = slash(fs.readlinkSync(getDestinationPath('nested-symlinks/nested/directory')));
 				expected = '../../directory';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 			});
 		});
 
@@ -504,7 +496,7 @@ describe('copy()', function() {
 						expected = {
 							file: 'Hello, world!\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -526,7 +518,7 @@ describe('copy()', function() {
 						expected = {
 							file: 'Hello, world!\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -548,7 +540,7 @@ describe('copy()', function() {
 						expected = {
 							file: 'Hello, world!\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -566,7 +558,7 @@ describe('copy()', function() {
 							'a': 'a\n',
 							'b': 'b\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -581,7 +573,7 @@ describe('copy()', function() {
 						var actual, expected;
 						actual = files;
 						expected = {};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -604,7 +596,7 @@ describe('copy()', function() {
 							'a': 'a\n',
 							'b': 'b\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -622,7 +614,7 @@ describe('copy()', function() {
 							'a': 'a\n',
 							'b': 'b\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -645,7 +637,7 @@ describe('copy()', function() {
 							'npm-debug.log': 'npm-debug.log\n',
 							'Thumbs.db': 'Thumbs.db\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -661,7 +653,7 @@ describe('copy()', function() {
 			).then(function(results) {
 				var actual = fs.lstatSync(getDestinationPath('expanded-file-symlink')).isSymbolicLink();
 				var expected = false;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 				return getOutputFiles()
 					.then(function(files) {
 						var actual, expected;
@@ -669,7 +661,7 @@ describe('copy()', function() {
 						expected = {
 							'expanded-file-symlink': 'Hello, world!\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -685,7 +677,7 @@ describe('copy()', function() {
 			).then(function(results) {
 				var actual = fs.lstatSync(getDestinationPath('directory-symlink')).isSymbolicLink();
 				var expected = false;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 				return getOutputFiles()
 					.then(function(files) {
 						var actual, expected;
@@ -697,7 +689,7 @@ describe('copy()', function() {
 								'c': 'c\n'
 							}
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -716,7 +708,7 @@ describe('copy()', function() {
 				var actual, expected;
 				actual = fs.lstatSync(getDestinationPath('expanded-nested-symlinks')).isSymbolicLink();
 				expected = false;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 				return getOutputFiles()
 					.then(function(files) {
 						var actual, expected;
@@ -738,7 +730,7 @@ describe('copy()', function() {
 								}
 							}
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -777,7 +769,7 @@ describe('copy()', function() {
 							'a': 'a\n',
 							'b': 'b\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -811,7 +803,7 @@ describe('copy()', function() {
 							'a': 'a\n',
 							'b': 'b\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -842,7 +834,7 @@ describe('copy()', function() {
 								'2-b': '2-b\n'
 							}
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -888,7 +880,7 @@ describe('copy()', function() {
 							},
 							'a': 'a\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -936,7 +928,7 @@ describe('copy()', function() {
 							'a': 'a\n',
 							'c': 'b\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -983,7 +975,7 @@ describe('copy()', function() {
 							'a': 'a\n',
 							'b': 'b\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -1032,7 +1024,7 @@ describe('copy()', function() {
 								'3-b': '2-b\n'
 							}
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -1081,7 +1073,7 @@ describe('copy()', function() {
 								}
 							}
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -1107,7 +1099,7 @@ describe('copy()', function() {
 						expected = {
 							'b': 'a\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -1133,14 +1125,14 @@ describe('copy()', function() {
 						expected = {
 							'file': 'HELLO, WORLD!\n'
 						};
-						expect(actual).to.eql(expected);
-						expect(transformArguments).to.exist;
-						expect(transformArguments.length).to.eql(3);
-						expect(transformArguments[0]).to.equal(getSourcePath('file'));
-						expect(transformArguments[1]).to.equal(getDestinationPath('file'));
-						expect(transformArguments[2]).to.exist;
-						expect(transformArguments[2].isFile).to.exist;
-						expect(transformArguments[2].isFile()).to.be.truthy;
+						assert.deepStrictEqual(actual, expected);
+						assert.notEqual(transformArguments, null);
+						assert.deepStrictEqual(transformArguments.length, 3);
+						assert.strictEqual(transformArguments[0], getSourcePath('file'));
+						assert.strictEqual(transformArguments[1], getDestinationPath('file'));
+						assert.notEqual(transformArguments[2], null);
+						assert.notEqual(transformArguments[2].isFile, null);
+						assert.ok(transformArguments[2].isFile());
 					});
 			});
 		});
@@ -1169,7 +1161,7 @@ describe('copy()', function() {
 								'c': 'C\n'
 							}
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -1188,7 +1180,7 @@ describe('copy()', function() {
 					}
 				}
 			);
-			return expect(actual).to.be.rejectedWith(expected);
+			return assert.rejects(actual, { message: new RegExp(expected) });
 		});
 
 		it('should throw the original error on nested file error', function() {
@@ -1213,31 +1205,31 @@ describe('copy()', function() {
 
 				actual = error.name;
 				expected = 'Error';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = error.message;
 				expected = 'Stream error';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 			});
 		});
 	});
 
 	describe('shouldCopy()', function() {
 		it('should skip dotfiles and junk files by default', function() {
-			expect(copy.shouldCopy('a/b')).to.equal(true);
-			expect(copy.shouldCopy('a/.b')).to.equal(false);
-			expect(copy.shouldCopy('a/Thumbs.db')).to.equal(false);
+			assert.strictEqual(copy.shouldCopy('a/b'), true);
+			assert.strictEqual(copy.shouldCopy('a/.b'), false);
+			assert.strictEqual(copy.shouldCopy('a/Thumbs.db'), false);
 		});
 
 		it('should keep dotfiles but not junk files with dot', function() {
-			expect(copy.shouldCopy('a/.b', { dot: true })).to.equal(true);
-			expect(copy.shouldCopy('a/.DS_Store', { dot: true })).to.equal(false);
+			assert.strictEqual(copy.shouldCopy('a/.b', { dot: true }), true);
+			assert.strictEqual(copy.shouldCopy('a/.DS_Store', { dot: true }), false);
 		});
 
 		it('should keep junk files with junk', function() {
-			expect(copy.shouldCopy('a/Thumbs.db', { junk: true })).to.equal(true);
-			expect(copy.shouldCopy('a/.DS_Store', { junk: true })).to.equal(false);
-			expect(copy.shouldCopy('a/.DS_Store', { dot: true, junk: true })).to.equal(true);
+			assert.strictEqual(copy.shouldCopy('a/Thumbs.db', { junk: true }), true);
+			assert.strictEqual(copy.shouldCopy('a/.DS_Store', { junk: true }), false);
+			assert.strictEqual(copy.shouldCopy('a/.DS_Store', { dot: true, junk: true }), true);
 		});
 	});
 
@@ -1250,7 +1242,7 @@ describe('copy()', function() {
 				getDestinationPath()
 			);
 			expected = 'ENOENT';
-			return expect(actual).to.be.rejectedWith(expected);
+			return assert.rejects(actual, { message: new RegExp(expected) });
 		});
 
 		it('should throw an error if the destination path exists (single file)', function() {
@@ -1262,7 +1254,7 @@ describe('copy()', function() {
 				getDestinationPath('file')
 			);
 			expected = 'EEXIST';
-			return expect(actual).to.be.rejectedWith(expected);
+			return assert.rejects(actual, { message: new RegExp(expected) });
 		});
 
 		it('should not throw an error if an nonconflicting file exists within the destination path (single file)', function() {
@@ -1280,7 +1272,7 @@ describe('copy()', function() {
 							'pre-existing': '',
 							'file': 'Hello, world!\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
@@ -1294,7 +1286,7 @@ describe('copy()', function() {
 				getDestinationPath()
 			);
 			expected = 'EEXIST';
-			return expect(actual).to.be.rejectedWith(expected);
+			return assert.rejects(actual, { message: new RegExp(expected) });
 		});
 
 		it('should not throw an error if an nonconflicting file exists within the destination path (directory)', function() {
@@ -1337,20 +1329,20 @@ describe('copy()', function() {
 							'a': 'a\n',
 							'b': 'b\n'
 						};
-						expect(actual).to.eql(expected);
+						assert.deepStrictEqual(actual, expected);
 					});
 			});
 		});
 	});
 
 	describe('callbacks', function() {
-		it('should invoke the callback on success (without options)', function(done) {
+		it('should invoke the callback on success (without options)', function(t, done) {
 			copy(
 				getSourcePath('file'),
 				getDestinationPath('file'),
 				function(error, results) {
-					expect(results).to.exist;
-					expect(error).not.to.exist;
+					assert.notEqual(results, null);
+					assert.equal(error, null);
 
 					checkResults(results, {
 						'file': 'file'
@@ -1361,32 +1353,32 @@ describe('copy()', function() {
 			);
 		});
 
-		it('should invoke the callback on failure (without options)', function(done) {
+		it('should invoke the callback on failure (without options)', function(t, done) {
 			copy(
 				'nonexistent',
 				getDestinationPath(),
 				function(error, results) {
-					expect(error).to.exist;
-					expect(results).not.to.exist;
+					assert.notEqual(error, null);
+					assert.equal(results, null);
 
 					var actual, expected;
 					actual = error.code;
 					expected = 'ENOENT';
-					expect(actual).to.equal(expected);
+					assert.strictEqual(actual, expected);
 
 					done();
 				}
 			);
 		});
 
-		it('should invoke the callback on success (with options)', function(done) {
+		it('should invoke the callback on success (with options)', function(t, done) {
 			copy(
 				getSourcePath('file'),
 				getDestinationPath('file'),
 				{ },
 				function(error, results) {
-					expect(results).to.exist;
-					expect(error).not.to.exist;
+					assert.notEqual(results, null);
+					assert.equal(error, null);
 
 					checkResults(results, {
 						'file': 'file'
@@ -1396,19 +1388,19 @@ describe('copy()', function() {
 				}
 			);
 		});
-		it('should invoke the callback on failure (with options)', function(done) {
+		it('should invoke the callback on failure (with options)', function(t, done) {
 			copy(
 				'nonexistent',
 				getDestinationPath(),
 				{},
 				function(error, results) {
-					expect(error).to.exist;
-					expect(results).not.to.exist;
+					assert.notEqual(error, null);
+					assert.equal(results, null);
 
 					var actual, expected;
 					actual = error.code;
 					expected = 'ENOENT';
-					expect(actual).to.equal(expected);
+					assert.strictEqual(actual, expected);
 
 					done();
 				}
@@ -1433,7 +1425,7 @@ describe('copy()', function() {
 				COPY_FILE_ERROR: 'copyFileError',
 				COPY_FILE_COMPLETE: 'copyFileComplete'
 			};
-			expect(actual).to.eql(expected);
+			assert.deepStrictEqual(actual, expected);
 		});
 
 		it('should allow event listeners to be chained', function() {
@@ -1441,7 +1433,7 @@ describe('copy()', function() {
 				getSourcePath('file'),
 				getDestinationPath('file')
 			);
-			expect(function() {
+			assert.doesNotThrow(function() {
 					copier
 						.on('error', function() {})
 						.on('complete', function() {})
@@ -1456,7 +1448,7 @@ describe('copy()', function() {
 						.on('copyFileComplete', function() {})
 						.then(function() { })
 						.catch(function() { });
-			}).to.not.throw();
+			});
 			return copier;
 		});
 
@@ -1475,7 +1467,7 @@ describe('copy()', function() {
 
 				actual = eventNames;
 				expected = ['copyFileStart', 'copyFileComplete', 'complete'];
-				expect(actual).to.eql(expected);
+				assert.deepStrictEqual(actual, expected);
 
 				var completeEvent = events.filter(function(event) {
 					return event.name === 'complete';
@@ -1484,7 +1476,7 @@ describe('copy()', function() {
 
 				actual = eventArgs.length;
 				expected = 1;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				var results = eventArgs[0];
 				checkResults(results, {
@@ -1510,7 +1502,7 @@ describe('copy()', function() {
 
 				actual = eventNames;
 				expected = ['error'];
-				expect(actual).to.eql(expected);
+				assert.deepStrictEqual(actual, expected);
 
 				var errorEvent = events.filter(function(event) {
 					return event.name === 'error';
@@ -1519,22 +1511,22 @@ describe('copy()', function() {
 
 				actual = eventArgs.length;
 				expected = 2;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				var error = eventArgs[0];
 				var copyOperation = eventArgs[1];
 
 				actual = error.code;
 				expected = 'EEXIST';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = copyOperation.src;
 				expected = getSourcePath('file');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = copyOperation.dest;
 				expected = getDestinationPath('file');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 			});
 		});
 
@@ -1560,7 +1552,7 @@ describe('copy()', function() {
 
 				actual = eventNames;
 				expected = ['copyFileStart', 'copyFileError', 'error'];
-				expect(actual).to.eql(expected);
+				assert.deepStrictEqual(actual, expected);
 
 
 				var errorEvent = events.filter(function(event) {
@@ -1570,22 +1562,22 @@ describe('copy()', function() {
 
 				actual = eventArgs.length;
 				expected = 2;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				var error = eventArgs[0];
 				var copyOperation = eventArgs[1];
 
 				actual = error.message;
 				expected = 'Stream error';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = copyOperation.src;
 				expected = getSourcePath('file');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = copyOperation.dest;
 				expected = getDestinationPath('file');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 
 				var fileErrorEvent = events.filter(function(event) {
@@ -1595,26 +1587,26 @@ describe('copy()', function() {
 
 				actual = fileErrorEventArgs.length;
 				expected = 2;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				var fileError = fileErrorEventArgs[0];
 				var fileCopyOperation = fileErrorEventArgs[1];
 
 				actual = fileError.message;
 				expected = 'Stream error';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = fileCopyOperation.src;
 				expected = getSourcePath('file');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = fileCopyOperation.dest;
 				expected = getDestinationPath('file');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = fileCopyOperation.stats && fileCopyOperation.stats.isDirectory;
 				expected = 'function';
-				expect(actual).to.be.a(expected);
+				assert.strictEqual(typeof actual, expected);
 			});
 		});
 
@@ -1633,7 +1625,7 @@ describe('copy()', function() {
 
 				actual = eventNames;
 				expected = ['createDirectoryStart', 'createDirectoryComplete', 'complete'];
-				expect(actual).to.eql(expected);
+				assert.deepStrictEqual(actual, expected);
 
 				var completeEvent = events.filter(function(event) {
 					return event.name === 'complete';
@@ -1642,7 +1634,7 @@ describe('copy()', function() {
 
 				actual = eventArgs.length;
 				expected = 1;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				var results = eventArgs[0];
 				checkResults(results, {
@@ -1670,7 +1662,7 @@ describe('copy()', function() {
 
 				actual = eventNames;
 				expected = ['createDirectoryStart', 'createDirectoryError', 'error'];
-				expect(actual).to.eql(expected);
+				assert.deepStrictEqual(actual, expected);
 
 
 				var errorEvent = events.filter(function(event) {
@@ -1680,22 +1672,22 @@ describe('copy()', function() {
 
 				actual = eventArgs.length;
 				expected = 2;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				var error = eventArgs[0];
 				var copyOperation = eventArgs[1];
 
 				actual = error.message;
 				expected = 'Test error';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = copyOperation.src;
 				expected = getSourcePath('empty');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = copyOperation.dest;
 				expected = getDestinationPath('empty');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 
 				var directoryErrorEvent = events.filter(function(event) {
@@ -1705,26 +1697,26 @@ describe('copy()', function() {
 
 				actual = directoryErrorEventArgs.length;
 				expected = 2;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				var directoryError = directoryErrorEventArgs[0];
 				var directoryCopyOperation = directoryErrorEventArgs[1];
 
 				actual = directoryError.message;
 				expected = 'Test error';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = directoryCopyOperation.src;
 				expected = getSourcePath('empty');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = directoryCopyOperation.dest;
 				expected = getDestinationPath('empty');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = directoryCopyOperation.stats && directoryCopyOperation.stats.isDirectory;
 				expected = 'function';
-				expect(actual).to.be.a(expected);
+				assert.strictEqual(typeof actual, expected);
 			})
 			.then(function() {
 				unmockMkdirp();
@@ -1752,7 +1744,7 @@ describe('copy()', function() {
 
 				actual = eventNames;
 				expected = ['createSymlinkStart', 'createSymlinkError', 'error'];
-				expect(actual).to.eql(expected);
+				assert.deepStrictEqual(actual, expected);
 
 
 				var errorEvent = events.filter(function(event) {
@@ -1762,22 +1754,22 @@ describe('copy()', function() {
 
 				actual = eventArgs.length;
 				expected = 2;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				var error = eventArgs[0];
 				var copyOperation = eventArgs[1];
 
 				actual = error.message;
 				expected = 'Test error';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = copyOperation.src;
 				expected = getSourcePath('symlink');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = copyOperation.dest;
 				expected = getDestinationPath('symlink');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 
 				var symlinkErrorEvent = events.filter(function(event) {
@@ -1787,26 +1779,26 @@ describe('copy()', function() {
 
 				actual = symlinkErrorEventArgs.length;
 				expected = 2;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				var symlinkError = symlinkErrorEventArgs[0];
 				var symlinkCopyOperation = symlinkErrorEventArgs[1];
 
 				actual = symlinkError.message;
 				expected = 'Test error';
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = symlinkCopyOperation.src;
 				expected = getSourcePath('symlink');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = symlinkCopyOperation.dest;
 				expected = getDestinationPath('symlink');
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				actual = symlinkCopyOperation.stats && symlinkCopyOperation.stats.isDirectory;
 				expected = 'function';
-				expect(actual).to.be.a(expected);
+				assert.strictEqual(typeof actual, expected);
 			})
 			.then(function() {
 				unmockSymlink();
@@ -1833,7 +1825,7 @@ describe('copy()', function() {
 
 				actual = eventNames;
 				expected = ['createSymlinkStart', 'createSymlinkComplete', 'complete'];
-				expect(actual).to.eql(expected);
+				assert.deepStrictEqual(actual, expected);
 
 				var completeEvent = events.filter(function(event) {
 					return event.name === 'complete';
@@ -1842,7 +1834,7 @@ describe('copy()', function() {
 
 				actual = eventArgs.length;
 				expected = 1;
-				expect(actual).to.equal(expected);
+				assert.strictEqual(actual, expected);
 
 				var results = eventArgs[0];
 				checkResults(results, {

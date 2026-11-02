@@ -17,9 +17,9 @@
     "lib"
   ],
   "scripts": {
-    "test": "npm run test:lint && npm run test:mocha && if-node-version '>=10' npm run test:typings",
+    "test": "npm run test:lint && npm run test:unit && if-node-version '>=10' npm run test:typings",
     "test:lint": "if-node-version '>=4' eslint index.js test",
-    "test:mocha": "mocha --reporter spec",
+    "test:unit": "node --test test/spec/copy.spec.js test/spec/index.spec.js",
     "test:typings": "tsd && echo 'TypeScript definitions are valid'",
     "prepublishOnly": "npm run test"
   },
@@ -57,11 +57,8 @@
   },
   "devDependencies": {
     "@types/node": "^14.18.63",
-    "chai": "^3.5.0",
-    "chai-as-promised": "^5.3.0",
     "eslint": "^2.13.1",
     "if-node-version": "^1.1.1",
-    "mocha": "^2.5.3",
     "read-dir-files": "^0.1.1",
     "rewire": "^2.5.2",
     "through2": "^2.0.5",

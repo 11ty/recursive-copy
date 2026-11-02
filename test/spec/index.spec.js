@@ -1,15 +1,10 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+var test = require('node:test');
+var assert = require('node:assert');
 
-describe('recursive-copy', function() {
-	var copy;
-	before(function() {
-		copy = require('../..');
-	});
-
-	it('Should export a function', function() {
-		expect(copy).to.be.a('function');
+test.describe('recursive-copy', function() {
+	test.it('Should export a function', function() {
+		assert.strictEqual(typeof require('../..'), 'function');
 	});
 });
