@@ -52,9 +52,9 @@
   },
   "homepage": "https://github.com/11ty/recursive-copy",
   "dependencies": {
+    "brace-expansion": "^1.1.21",
     "errno": "^1.0.0",
     "junk": "^3.1.0",
-    "minimatch": "^3.1.5",
     "slash": "^3.0.0"
   },
   "devDependencies": {
