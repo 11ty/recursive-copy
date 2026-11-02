@@ -1203,6 +1203,34 @@ describe('copy()', function() {
 		});
 	});
 
+	describe('file copy method', function() {
+		var copyFileMock;
+
+		beforeEach(function() {
+			copyFileMock = test.mock.method(fs.promises, 'copyFile');
+		});
+
+		afterEach(function() {
+			copyFileMock.mock.restore();
+		});
+
+		it('should use fs.copyFile by default', function() {
+			return copy(getSourcePath('file'), getDestinationPath('file'))
+				.then(function() {
+					assert.strictEqual(copyFileMock.mock.callCount(), 1);
+					assert.strictEqual(fs.readFileSync(getDestinationPath('file'), 'utf8'), 'Hello, world!\n');
+				});
+		});
+
+		it('should use streams if streams is specified', function() {
+			return copy(getSourcePath('file'), getDestinationPath('file'), { streams: true })
+				.then(function() {
+					assert.strictEqual(copyFileMock.mock.callCount(), 0);
+					assert.strictEqual(fs.readFileSync(getDestinationPath('file'), 'utf8'), 'Hello, world!\n');
+				});
+		});
+	});
+
 	describe('shouldCopy()', function() {
 		it('should skip dotfiles and junk files by default', function() {
 			assert.strictEqual(copy.shouldCopy('a/b'), true);

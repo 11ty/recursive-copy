@@ -46,6 +46,10 @@ interface Options {
 	 * Whether to log debug information.
 	 */
 	debug?: boolean;
+	/**
+	 * Whether to copy file contents with streams instead of `fs.copyFile` (the previous behavior).
+	 */
+	streams?: boolean;
 }
 
 interface CopyFn {

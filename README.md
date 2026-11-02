@@ -134,6 +134,7 @@ Recursively copy files and folders from `src` to `dest`
 | `options.results` | `boolean` | No | `true` | Whether to return an array of copy results |
 | `options.concurrency` | `number` | No | `255` | Maximum number of simultaneous copy operations |
 | `options.debug` | `boolean` | No | `false` | Whether to log debug information |
+| `options.streams` | `boolean` | No | `false` | Whether to copy file contents with streams instead of [`fs.copyFile`](https://nodejs.org/api/fs.html#fspromisescopyfilesrc-dest-mode) (the previous behavior) |
 | `callback` | `function` | No | `null` | Callback, invoked on success/failure |
 
 
